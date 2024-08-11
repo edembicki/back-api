@@ -17,12 +17,14 @@ import { AccountService } from './account.service';
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @Post('/reset')
-  @HttpCode(200)
-  @ApiOperation({ summary: 'Reset state before starting tests' })
-  @ApiResponse({ status: 200, description: 'State has been reset' })
+  @Post('reset')
+  @HttpCode(200) // Sets the status code to 200
+  @ApiOperation({ summary: 'Reset the banking system state' })
+  @ApiResponse({ status: 200, description: 'State successfully reset.' })
   reset() {
     this.accountService.reset();
+    // Return a response body with "OK"
+    return 'OK' // Include "OK" in the response body
   }
 
   @Get('/balance')
