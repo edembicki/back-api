@@ -6,6 +6,8 @@ import {
   Query,
   NotFoundException,
   HttpCode,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateAccountDto } from './dtos/create-account.dto';
@@ -38,17 +40,27 @@ export class AccountController {
   getBalance(@Query('account_id') accountId: string) {
     const account = this.accountService.getBalance(accountId);
     if (account) {
-      return account;
+      return account.balance;
     }
-    throw new NotFoundException('Account not found');
+    return 0;
   }
 
   @Post('/event')
   @ApiOperation({ summary: 'Create, deposit, withdraw, or transfer funds' })
   @ApiResponse({ status: 201, description: 'Event processed successfully' })
-  @ApiResponse({ status: 404, description: 'Account not found' })
+  @ApiResponse({ status: 404, description: 'Account not found, returns 0 in the response body' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  handleEvent(@Body() eventDto: EventDto) {
-    return this.accountService.handleEvent(eventDto);
+  async handleEvent(@Body() eventDto: EventDto) {
+    try {
+      const result = await this.accountService.handleEvent(eventDto);
+      return result; // Return the successful result
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        // Return 0 in the response body with a 404 status code
+        return 0; 
+      }
+      // Rethrow other exceptions
+      throw error;
+    }
   }
 }
