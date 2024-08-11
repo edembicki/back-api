@@ -5,6 +5,7 @@ import {
   Get,
   Query,
   NotFoundException,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateAccountDto } from './dtos/create-account.dto';
@@ -17,6 +18,7 @@ export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
   @Post('/reset')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Reset state before starting tests' })
   @ApiResponse({ status: 200, description: 'State has been reset' })
   reset() {
